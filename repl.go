@@ -13,6 +13,7 @@ type config struct {
 	apiClient        client.Client
 	nextLocationsURL *string
 	prevLocationsURL *string
+	pokedex          map[string]client.Pokemon
 }
 
 func startRepl(c *config) {
@@ -27,16 +28,19 @@ func startRepl(c *config) {
 		}
 
 		commandName := words[0]
-
+		args := []string{}
+		if len(words) > 1 {
+			args = words[1:]
+		}
 		command, exists := Commands()[commandName]
 		if exists {
-			err := command.callback(c)
+			err := command.callback(c, args...)
 			if err != nil {
 				fmt.Println(err)
 			}
 			continue
 		} else {
-			fmt.Println("Unknown command")
+			fmt.Printf("Unknown command %v", words)
 			continue
 		}
 	}
